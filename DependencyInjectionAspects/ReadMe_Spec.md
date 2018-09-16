@@ -1,15 +1,17 @@
-﻿# Primary options
+﻿#
+
+## Primary options
 - Option 1: Generate an inherited type that runs aspect actions then passes to parent
     - could write a custom provider that creates instantiates these aspect types in place of bound type
     - downsides -> this probably needs reflection and reflection is slow
     - could we generate types at compile time? We have all the info we need at compile time
 		- This is basically what PostSharp is, and it's a big undertaking with IL rewritting and such
 	- how to generate proxy https://www.codeproject.com/Articles/5511/Dynamic-Proxy-Creation-Using-C-Emit 
-- Option 1.1 Windsor
+- Option 1.1 Windsor or Unity
 	- the Windsor DI framework already implemented my DI dynamic proxy idea
 	- https://github.com/castleproject/Windsor/blob/master/docs/interceptors.md
 	- cons: you need to tread carefully around limitations like polymorphism and performance
-
+	- **Unity** also implements interception, but it isn't well documented https://github.com/unitycontainer/unity
 - Option 2: Transparent Dynamic Proxy
     - http://www.castleproject.org/projects/dynamicproxy/
     - cons: can only proxy virtual methods
@@ -41,6 +43,13 @@ How does asp.net auth work?
 - asp.net appears to be able to run filters / middleware because it has control
   over the binding from http to controller methods
   https://github.com/aspnet/Mvc/blob/release/2.2/src/Microsoft.AspNetCore.Mvc.Core/Authorization/AuthorizeFilter.cs
+- https://github.com/aspnet/Identity/issues/945
+	- Security doesn't seem to actually retrieve the attributes. It consumes the AuthorizeAttribute as IAuthorizeData
+	  in AuthorizationPolicy. The only calls to it is the security repo are from tests though
+	- MVC
+		- Consumes IAuthorize data from several places example (https://github.com/aspnet/Mvc/blob/a67d9363e22be8ef63a1a62539991e1da3a6e30e/src/Microsoft.AspNetCore.Mvc.Core/Internal/AuthorizationApplicationModelProvider.cs)
+		- These are already available on context.Result.Controllers where context is a ApplicationModelProviderContext and Controllers is a Ienumberable<ControllerModel>
+		- Here is the default implementation where attributes are discovered (via GetCustomAttributes) and placed in a ControllerModel https://github.com/aspnet/Mvc/blob/c16f86f0ef3781e6c86ca9677a3aa8da2266348a/src/Microsoft.AspNetCore.Mvc.Core/Internal/DefaultApplicationModelProvider.cs
 
 All in all, I would probably want to use a command/strategy pattern with attributes. The more 
 logic I can push into the attributes, the more concerns I can re-use without changing my proxy behavior
@@ -52,6 +61,10 @@ then I either go post sharp or drop AOP.
 Also create an analogous functional auth scheme to contrast the two
 
 ## Design
+- Goal: Gain better understanding of centralized auth paradigms and other shared concerns
+- Program: Primary concern is authentication that can be applied consistently across 
+  service-level components
+
 - How will I access user information?
 	- Ambient context?
 	- Attributes don't know their target, so it will have to be available in the
