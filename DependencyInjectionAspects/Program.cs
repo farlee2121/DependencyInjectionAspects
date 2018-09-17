@@ -12,6 +12,7 @@ namespace DependencyInjectionAspects
             var container = new WindsorContainer();
             container.Register(Component.For<Runner>());
             container.Register(Component.For<AuthenticateMe>().ImplementedBy<AuthenticateMe>());
+            container.Register(Component.For<AuthenticationInterceptor>().LifeStyle.Transient);
 
             var runner = container.Resolve<Runner>();
             runner.DoTheThing();

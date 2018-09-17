@@ -6,7 +6,7 @@ using System.Text;
 namespace DependencyInjectionAspects
 {
 
-    [Interceptor(typeof())]
+    [Interceptor(typeof(AuthenticationInterceptor))]
     public class AuthenticateMe
     {
         public string IAuthed()
