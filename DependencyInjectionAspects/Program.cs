@@ -1,4 +1,5 @@
-﻿using Castle.MicroKernel.Registration;
+﻿using Castle.Core;
+using Castle.MicroKernel.Registration;
 using Castle.Windsor;
 using System;
 
@@ -9,10 +10,17 @@ namespace DependencyInjectionAspects
         static void Main(string[] args)
         {
             // windsor docs https://github.com/castleproject/Windsor/blob/master/docs/README.md
+
+            // windsor AOP tutorial: https://lukemerrett.com/aop-in-castle-windsor/
             var container = new WindsorContainer();
+            container.Register(Component.For<AuthorizationInterceptor>().LifeStyle.Transient);
+            container.Register(Component.For<AuthorizeMe>().ImplementedBy<AuthorizeMe>());
             container.Register(Component.For<Runner>());
-            container.Register(Component.For<AuthenticateMe>().ImplementedBy<AuthenticateMe>());
-            container.Register(Component.For<AuthenticationInterceptor>().LifeStyle.Transient);
+
+            //container.Register(Component.For<AuthorizationInterceptor>().ImplementedBy<AuthorizationInterceptor>().LifeStyle.Transient,
+            //    Component.For<AuthorizeMe>().ImplementedBy<AuthorizeMe>()
+            //    .Interceptors(InterceptorReference.ForType<AuthorizationInterceptor>()).Anywhere,
+            //    Component.For<Runner>());
 
             var runner = container.Resolve<Runner>();
             runner.DoTheThing();
@@ -21,9 +29,11 @@ namespace DependencyInjectionAspects
 
     public class Runner
     {
-        private readonly AuthenticateMe authMe;
+        private readonly AuthorizeMe authMe;
 
-        public Runner(AuthenticateMe authMe)
+        private readonly int UserId = 0;
+
+        public Runner(AuthorizeMe authMe)
         {
             this.authMe = authMe;
         }
@@ -32,7 +42,7 @@ namespace DependencyInjectionAspects
         {
             try
             {
-                var result = authMe.IAuthed();
+                var result = authMe.IAuthed(UserId);
                 Console.WriteLine(result);
             }
             catch (Exception)

@@ -6,10 +6,10 @@ using System.Text;
 namespace DependencyInjectionAspects
 {
 
-    [Interceptor(typeof(AuthenticationInterceptor))]
-    public class AuthenticateMe
+    [Interceptor(typeof(AuthorizationInterceptor))]
+    public class AuthorizeMe
     {
-        public string IAuthed()
+        public virtual string IAuthed(int userId)
         {
             return "Yay! I authed";
         }
