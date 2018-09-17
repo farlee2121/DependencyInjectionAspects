@@ -1,13 +1,14 @@
 ﻿#
 
 ## Primary options
-- Option 1: Generate an inherited type that runs aspect actions then passes to parent
+- Option 1: Homebrew
+    - Generate an inherited type that runs aspect actions then passes to parent
     - could write a custom provider that creates instantiates these aspect types in place of bound type
     - downsides -> this probably needs reflection and reflection is slow
     - could we generate types at compile time? We have all the info we need at compile time
 		- This is basically what PostSharp is, and it's a big undertaking with IL rewritting and such
 	- how to generate proxy https://www.codeproject.com/Articles/5511/Dynamic-Proxy-Creation-Using-C-Emit 
-- Option 1.1 Windsor or Unity
+- Option 1.1: Windsor or Unity
 	- the Windsor DI framework already implemented my DI dynamic proxy idea
 	- https://github.com/castleproject/Windsor/blob/master/docs/interceptors.md
 	- cons: you need to tread carefully around limitations like polymorphism and performance
@@ -16,7 +17,14 @@
     - http://www.castleproject.org/projects/dynamicproxy/
     - cons: can only proxy virtual methods
 
-- Option 3: Give up and realize PostSharp does what I want better than what i've concocted 
+- Option 3: Free IL Rewriters
+	- PureSharp
+	- https://github.com/Virtuoze/Puresharp
+	- Uses Mono.Cecil to rewrite assemblies. Probably more performant, but a bit spooky
+	- **Cauldron** is similar https://github.com/reflection-emit/Cauldron
+	- Both puresharp and cauldron are active as of august 2018
+
+- Option 4: Give up and realize PostSharp does what I want better than what i've concocted 
     - http://samples.postsharp.net/f/PostSharp.Samples.Authorization/
 
 
@@ -58,7 +66,7 @@ logic I can push into the attributes, the more concerns I can re-use without cha
 Try windsor, it is basically a ready-made version of what I envisioned. If it isn't good enough
 then I either go post sharp or drop AOP.
 
-Also create an analogous functional auth scheme to contrast the two
+Also create an analogous functional auth scheme to contrast it with AOP design
 
 ## Design
 - Goal: Gain better understanding of centralized auth paradigms and other shared concerns
