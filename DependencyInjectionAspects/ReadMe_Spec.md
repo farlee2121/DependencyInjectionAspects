@@ -59,8 +59,12 @@ How does asp.net auth work?
 		- These are already available on context.Result.Controllers where context is a ApplicationModelProviderContext and Controllers is a Ienumberable<ControllerModel>
 		- Here is the default implementation where attributes are discovered (via GetCustomAttributes) and placed in a ControllerModel https://github.com/aspnet/Mvc/blob/c16f86f0ef3781e6c86ca9677a3aa8da2266348a/src/Microsoft.AspNetCore.Mvc.Core/Internal/DefaultApplicationModelProvider.cs
 
+How does system.Transaction work ambiently?
+
+
 All in all, I would probably want to use a command/strategy pattern with attributes. The more 
 logic I can push into the attributes, the more concerns I can re-use without changing my proxy behavior
+
 
 ## Conclusion
 Try windsor, it is basically a ready-made version of what I envisioned. If it isn't good enough

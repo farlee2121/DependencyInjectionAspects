@@ -15,30 +15,39 @@ namespace DependencyInjectionAspects
             var container = new WindsorContainer();
             container.Register(Component.For<AuthorizationInterceptor>().LifeStyle.Transient);
             container.Register(Component.For<AuthorizeMe>().ImplementedBy<AuthorizeMe>());
-            container.Register(Component.For<Runner>());
+            container.Register(Component.For<TestRunner>());
 
             //container.Register(Component.For<AuthorizationInterceptor>().ImplementedBy<AuthorizationInterceptor>().LifeStyle.Transient,
             //    Component.For<AuthorizeMe>().ImplementedBy<AuthorizeMe>()
             //    .Interceptors(InterceptorReference.ForType<AuthorizationInterceptor>()).Anywhere,
             //    Component.For<Runner>());
 
-            var runner = container.Resolve<Runner>();
-            runner.DoTheThing();
+            var runner = container.Resolve<TestRunner>();
+
+            runner.RunTests();
+            
         }
     }
 
-    public class Runner
+    public class TestRunner
     {
         private readonly AuthorizeMe authMe;
 
         private readonly int UserId = 0;
 
-        public Runner(AuthorizeMe authMe)
+        public void RunTests()
+        {
+            AuthorizedRoleTest();
+            UnauthorizedRoleTest();
+            Console.ReadKey();
+        }
+
+        public TestRunner(AuthorizeMe authMe)
         {
             this.authMe = authMe;
         }
 
-        public void DoTheThing()
+        private void AuthorizedRoleTest()
         {
             try
             {
@@ -50,8 +59,21 @@ namespace DependencyInjectionAspects
                 Console.WriteLine("oops");
                 throw;
             }
-            Console.ReadKey();
             
+            
+        }
+
+        private void UnauthorizedRoleTest()
+        {
+            try
+            {
+                var result = authMe.INotAuthed(UserId);
+                Console.WriteLine(result);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+            }
         }
     }
 }
