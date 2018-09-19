@@ -11,6 +11,7 @@
 - Option 1.1: Windsor or Unity
 	- the Windsor DI framework already implemented my DI dynamic proxy idea
 	- https://github.com/castleproject/Windsor/blob/master/docs/interceptors.md
+	- a more in-depth exploration http://kozmic.net/dynamic-proxy-tutorial/
 	- cons: you need to tread carefully around limitations like polymorphism and performance
 	- **Unity** also implements interception, but it isn't well documented https://github.com/unitycontainer/unity
 - Option 2: Transparent Dynamic Proxy
@@ -60,7 +61,19 @@ How does asp.net auth work?
 		- Here is the default implementation where attributes are discovered (via GetCustomAttributes) and placed in a ControllerModel https://github.com/aspnet/Mvc/blob/c16f86f0ef3781e6c86ca9677a3aa8da2266348a/src/Microsoft.AspNetCore.Mvc.Core/Internal/DefaultApplicationModelProvider.cs
 
 How does system.Transaction work ambiently?
+https://www.appliedis.com/the-magic-of-transactionscope/
+ - Conclusion: this wouldn't help for ambient authorization. It works because the 'resource manager' types
+   like SqlClient are aware of the possible tread data for the scope. 
+   To utilize a similar paradigm, all of our authed code would have to be wrapped in some kind of context, which
+   defeats the goal of preventing intermingled auth code
 
+Would a AuthContext in the style of DbContext be a meaningful advance over if statements?
+  - How would it manage failed auth? We'd pretty much be limited to exceptions :/
+
+
+Chad Mentioned that Unity can operate interceptors on the interfaces independent of their concrete type.
+Castle explictly doesn't do with attributes https://github.com/castleproject/Windsor/blob/master/docs/interceptors.md#interceptorattribute
+However, it will work if you register interceptors on the interface via DI configuration (and then you don't need virtual methods)
 
 All in all, I would probably want to use a command/strategy pattern with attributes. The more 
 logic I can push into the attributes, the more concerns I can re-use without changing my proxy behavior

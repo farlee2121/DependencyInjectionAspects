@@ -6,17 +6,18 @@ using System.Text;
 namespace DependencyInjectionAspects
 {
 
-    [Interceptor(typeof(AuthorizationInterceptor))]
-    public class AuthorizeMe
+
+    //[Interceptor(typeof(AuthorizationInterceptor))]
+    public class AuthorizeMe : IAuthorizeMe
     {
-        [AuthorizeRoles(AuthRoles.Normal)]
-        public virtual string IAuthed(int userId)
+        
+        public string IAuthed(int userId)
         {
             return "Yay! I authed";
         }
 
-        [AuthorizeRoles(AuthRoles.Super)]
-        public virtual string INotAuthed(int userId)
+        
+        public string INotAuthed(int userId)
         {
             return "you shouldn't see this. it's not authorized";
         }

@@ -14,7 +14,9 @@ namespace DependencyInjectionAspects
             // windsor AOP tutorial: https://lukemerrett.com/aop-in-castle-windsor/
             var container = new WindsorContainer();
             container.Register(Component.For<AuthorizationInterceptor>().LifeStyle.Transient);
-            container.Register(Component.For<AuthorizeMe>().ImplementedBy<AuthorizeMe>());
+            container.Register(Component.For<IAuthorizeMe>()
+                .Interceptors(InterceptorReference.ForType<AuthorizationInterceptor>()).Anywhere
+                .ImplementedBy<AuthorizeMe>());
             container.Register(Component.For<TestRunner>());
 
             //container.Register(Component.For<AuthorizationInterceptor>().ImplementedBy<AuthorizationInterceptor>().LifeStyle.Transient,
@@ -31,7 +33,7 @@ namespace DependencyInjectionAspects
 
     public class TestRunner
     {
-        private readonly AuthorizeMe authMe;
+        private readonly IAuthorizeMe authMe;
 
         private readonly int UserId = 0;
 
@@ -42,7 +44,7 @@ namespace DependencyInjectionAspects
             Console.ReadKey();
         }
 
-        public TestRunner(AuthorizeMe authMe)
+        public TestRunner(IAuthorizeMe authMe)
         {
             this.authMe = authMe;
         }
@@ -54,10 +56,9 @@ namespace DependencyInjectionAspects
                 var result = authMe.IAuthed(UserId);
                 Console.WriteLine(result);
             }
-            catch (Exception)
+            catch (Exception e)
             {
-                Console.WriteLine("oops");
-                throw;
+                Console.WriteLine(e.Message);
             }
             
             

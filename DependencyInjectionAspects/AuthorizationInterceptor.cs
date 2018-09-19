@@ -39,7 +39,7 @@ namespace DependencyInjectionAspects
 
         private IEnumerable<AuthRoles> GetTargetAllowedRoles(IInvocation invocation)
         {
-            IEnumerable<AuthorizeRolesAttribute> attributes = invocation.MethodInvocationTarget.GetCustomAttributes(true).OfType<AuthorizeRolesAttribute>();
+            IEnumerable<AuthorizeRolesAttribute> attributes = invocation.Method.GetCustomAttributes(true).OfType<AuthorizeRolesAttribute>();
             IEnumerable<AuthRoles> allowedRoles = attributes.SelectMany(attr => attr.AllowedRoles);
             return allowedRoles;
         }
